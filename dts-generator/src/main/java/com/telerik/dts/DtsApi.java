@@ -10,16 +10,7 @@ import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
 import org.apache.bcel.util.BCELComparator;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by plamen5kov on 6/17/16.
@@ -393,6 +384,13 @@ public class DtsApi {
         String[] interfaceNames = classInterface.getInterfaceNames();
         for (String intface : interfaceNames) {
             JavaClass clazz1 = ClassRepo.findClass(intface);
+
+            // Added guard to prevent NullPointerExceptions in case libs are not provided - the dev can choose to include it and rerun the generator
+            if (clazz1 == null) {
+                System.out.println("ignoring definitions in missing dependency: " + intface);
+                continue;
+            }
+            
             String className = clazz1.getClassName();
 
             // TODO: Pete: Hardcoded until we figure out how to go around the 'type incompatible with Object' issue
